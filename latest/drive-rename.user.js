@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         云盘批量重命名
 // @namespace    vite-plugin-monkey
-// @version      1.6.4
+// @version      1.6.5
 // @author       a1mersnow
-// @description  批量重命名云盘里的文件，支持115网盘、123云盘、阿里云盘、百度网盘、移动云盘（2026新版接口适配）、天翼云盘、夸克云盘、UC网盘；内置「重命名方案」规则链面板（12 种规则可顺序叠加、预览、勾选执行），所有网盘通用
+// @description  批量重命名云盘里的文件，支持115网盘、123云盘、阿里云盘、百度网盘、移动云盘（2026新版接口适配）、天翼云盘、夸克云盘、UC网盘；内置「重命名方案」规则链面板（12 种规则可顺序叠加、预览、勾选执行），所有网盘通用；规则链面板已与文件列表窗口合并为同一窗口
 // @license      GPL
 // @icon         data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAABHsSURBVHgB7d0/jBxnGcfx3xxRzqbBUFCAgEUQqkRcJJIGFF9EAYLCNl1ofFAhUWQtQf4gIZ+FIImF5E2BRIUvDenwuUAKRcg5Ck0SlIucioCyCQIJCuLQ2EbKDe/zzk6yNzd7t3/emXln9vuRTndnjO2zb395nmfePxIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEDMEgFz6j+R9kYf9sZ++MOPU91w32E3xv63oW7rxmAzuSFgDgQWJupvpie0qjWtuLdUn3PfLT33vuf+pxPaH1LzGPo3C7TUv39be9p1gbZLoGESAgueD6c7te7C6aQPJrmPUx9M9ctCbNe9XXOf7RBiyBFYS+qD6inRKVk4yX0ct11ZeKW6Ong82RGWEoG1RHxIHdeGe9Gfcv/ya41VUCEk2nYt5FX30Y4LsKGwFAisjtsXUlkl1UVWeT3jWsdtWsduI7A6yj3BW/ftXuLDqr2V1Cyy2de2hRdtYzcRWB2yJNXUtIbu7+GCC64toTMIrA4YBdXD9uHSVFPTsyUTW27e9QyzrvYjsFqMoJoJwdUBBFYLEVQLyYLrpp5mQN8+BFbLnLuYPpym2iSoFsaMq4UIrJYYPfU7L4bpoVlwPUib2A4EVuRG7d9596LqC1XaGlVcQyFaBFbERlXVZS2+0RjToU2MHIEVIaqqxlFtRYrAikz/YrrmHr1fEVVV04Za0ZnBI8muEI0VIRr2BNCF1WsirGLQs3+L/lPpeSEaVFgRGLWAl10bclqIT3YyxDlaxOYRWA3zxwwnekFUVbFj+UMEaAkb5J8CrtACtkTP/q36v0ipghtEYDXk3FPpWV9ZsWK9PezfakVX3FyLp7cNIbAaYIPcNHWPztFOqS4xjG8GM6ya+W902wuI9ku0OXg0uSDUhsCqEWHVQYRWrQismhBWHUZo1YbAqgFhtQQIrVoQWBUjrJYIoVU5AqtC/rC9PQ2E5ZHonAst/s0rQmBVxC8wXPGbmLFs9nRm8JNkWwiOwKqA325jK9hZFLqc7H7ERA9y0kN4LBwN7IO9gYTV8rJ/+z1d8ZvaERSBFdqKLom9gbDvgWOMBEIjsAIaPRFkcyxy6+574pIQDDOsQEbnr78goCg7lmZHWBiBFQBnWuEIQ93SvVzcujhawhCy+wJ7AsoxzwqEwFqQq6423LsNAYdb5xytxdESLoBWEDOx9Vl7rjXkmOW5UWEtglYQs8hOLOWp4QKosObkW8HsVmZgNjw1nBsV1ryy6gqYnfsPHavg50NgzWF0nndPwHx6WhUD+DnQEs6IQTuCsAH8TX2etVmzocKawegUBvYKYnE2gKfKmhkVVgkfTJJttfmye+u5b641EVIIjSprZncI6l9M11worbsPT8qCavxomFRANT6ssjaFqSxthTXarHzKvW1wdhUaQ5U1k6WqsEpDigoKTaLKmknnKyy/3uW4D6hTkm/7gLhQZU2tsxXWKKgetg9p+RA1qqypdS6wCCq0UqKzIrCO1JmWkKBC67HH8EidWDhqF5a6sHrL37BMWKGtVvx/cHGIVldYo6d+tvJ8TUDbMXw/UitnWKP2z26oYWsDusO6g+P+9Fquup+gdS2hX5V+zN+qTFihe7LlN5igVS2hzarSPf7rg467pY/TFpZrRUvoW8BjuuLCal1A19EWThR9S+hPTrAWkFXqWBa0hRNFHVj+KeCKD6uegGWRaI0jlMtFG1h+bZWd7Mm6KiybbKsOS3VKRBlYdmY6w3UsudPCAdEFlr/gIWVPFZacnXaLA6Ja1kBYAWNY3nBANBUWYQUUMMc6IIoKiwWhQKkt7emq32MoDQePJ0MtucYDy2+12fNLFwAcbde9aofuNfO6+3hHt7W7TG1jo4HFpaRAELuy8Ep1tevnaTUWWKPtNiwKBUKy9jHVtnt7povh1VxgPZledu82BKAqQ2WV14WuzL8aCSyG7EDttrpQddUeWKO51VsC0IS84tpRC9UfWE+mFlY9AWhO4uZcezrXtlax1sBicSgQna02zbhqCyxaQSBaw1FobSly9W3NWfG32wCIjxUTl+3JvS8sIlZLheX+EjbsL0QAYjd0xcWZwSPJriJUT4WV6LwAtEHPtsr5eXOEKg8sX13xVBBoF/dwzIVWdGOcyltCljEArbarW3owlg3WlVZYVFdA6/mLi2MZxlfbEjK7ArrAn6oSQ2hVFlhUV0CnRBFa1VVYVFdA12Sh1eCdiZUElr8AleoK6CK7if2KGlJNhZXorAB01XpTSx6CL2voX3Ll4m29KwDdlujc4NGk1nPtwgcW23AA7/iq9P3vSF/8rIL4z3vSr57N3kdjRffWuY0nfEtIOwh4D3wlXFiZT3xMeuhbisuertQ5hA8aWL4ddP2tAOj4MQVXxa+5oJ6O17ciIGyF9T/CCsi9+Gr49s1+zeik6o9WBlQu6AyLm3CA/ayNs7dJfvjQ/s+3n5f+8e/yn2vhF9X8ar+hbrl5VsV7Du9QWOsC8IFZQ8bC6q/vqI16WlXfvd9UhYK1hP2fp2tisSiwvBKdr3rrTrgZ1orWBGC5VbykKVxLmOikgBaxdVLHVrMZkz19s8+r8re/zz9/sj/Xpz754ec3b0vvvpe9j9C6DeCruvcwZGCtuacFQNS+8Bnpni+5t7sOH4ZXwRZ9zjqfsj+jDebL/qw3b2Uzr5evLxaIwWUHH+yoAuECK6UlRLzyRZchF3LO6r67Zw8sq6wmBatVhfb15F/Tcy9Jf/iTYlBZlRVkhjUauANRsqrqRxvNhpWZp4W7NcP/55tfk376g/orxwlOqwJhKqw73NNB2kFEyKqa7357up9bZUtlv/YfXtLMrCK79qp08ivT/fy8hWx8z+GKzvY3083Q67JCtYQ9AZGxF++Zrx/8cZv9vPyGm/u8k82A7PNIB9ieLSa1N3N87CHBp127ePddByvHPLR+ebnBryvVCR33i8iDnuYQJrBSAgvxsRdtce+dBdRvfhf1ivFDWQDlK+Hz6uv+e6RvfHV/K+hndt/OvtbGpDqlwIEVah3W5wREpPgCNtffdK3Sb9sbVpPYU8KyFvCeuxqf262HXkgaKrAaO+MZKGNVxzh7MT/7+7hbv0XY11dWTVlwN2xDAYUKrJ6ASNhTwWJ1ZY/75w0re9FbexnBi/9Q1io+VxjsW4VV5YLYIwVeUF75VfVA3YptkFUf1jbNw54y2nIB+zXtfeyh9cobB3+s8bYw4AF/VFjonE9/cv/nk45rmYaF1LiT9ylqZadDfLzpdVmr4dZkUWGhc4pPBucdst9dsn3H2qumF6Aepdj6RrCQNNjCcgILnVMMLFtnNY9JizWjn2X9a//njc6wzEq4ORaBhc4pvkDnqbCsKplUSdmPR7L9ZSqNnwOfai3UHIvAAkocVUXZML4tGq+wzEfDzLnDBFaiSs9xBup21JzKhu9RBEGJKBfGvh9mjhUmsFICC/FYtF2z6qn4a1wr3FZjYXXfPcL0egqAlhAoKC5dsIql7DYb2/qCKSVhtu+FCqyhgA6wNVzFdVz5oXjX/7L/x8cPz8ORegogVEv4toAOeKBkKUN+SqhdYlpcItGm4XvDegqAoTswYnOr4qZp29KTD7FtQebLha0vdj58rMP3LgoVWEMBLWebpote/PP+z994c//nFlYPTHka6JLrKQBmWMBIcd+gDdmLq8atPSxeJBH7/sIuCRNYe9oV0GJl+wZffLX85xZPRGjD/sKuCBJYg8eTIXMstNn9heH5YUfS2NPC4vA99v2FXRHyXkKrstYFtIxVVjY8H2f77+wew0lsAD++Ry8/KK+rJ5rGIlxgSa+LwEILlVVHFj73z7iS3YbvkVxkGp9AHVi4le5JNVdTA1ULNX+KeX9h49LYAutOAgvtU7ZvcF7sLzzUUAEEawkH55Ib/afSXTv7RkBLFJck2DB9liOVLezGA8/2F056uojFhZxhWdl3TSKw0A5l+wa3/zjbhRU2/xpfv5XvLyyu1Vp6qZ9xLyzsaQ2ptgW0xGH7BqdVtr/wbk5xOGglTEsYNLAGjyc7rMdCGxy1b3BaZfsL7ddl+F4QaHF5+POwUj0jIHLT7BucFvsLpzJUAFUEFm0hojfNvsFpsb/wCK7r8rthAggeWLSFaNpRbV3ZVfaLPtljf+Eh0nB7jas5InlPTwuIVDGsFrnKPle2v7CpOVZ0V5AluqpAqgmsYxoIiJTNnMarsGJ1NA8bvo9vy7Fff5b1XJ0W8DSXsOuwRvwi0ifTHbG3EBEoVhwWLj/7dbbIM2Sw2M0619/M1nbZTKupjdAhLpINxuZXj7kxUSCVBJaX6oL7w64LqJm9QMdDatLNx9ffVCW/d9P3Aha/3kZPkAj8EK6ya7788F3sL0T9ioHRpmvlQyiu3m80QLPdL8FUey+hVVlAzYotXn5W1TKwcC5WWP9sapZmqwVut6TCMlRZaELxBbpMCznLzvaad33Zwlw7ONhMgi5xqv7mZ6os1MwG3sUqyxZydr01tFawuN3I5nSNzbAq2PVSeWBRZaEJxYWgVmX98KHuhpZ9Xd//zsEfb/AE1OHotR9U9RWWSfU9ATWyhaDF7TL2orbQ6tptzdbu/mjjYBjb30GD7WAlnVWimvSfSDfd73ZeQE3ygCqrquzJmbVL9oLOn6JV+TTt3f+W//ilR/d//qtnJx9xY1XisdVsqG5fk7WA+flbRfa1/PJyY+3gcPBY8nlVoLp1WEW2+v22zirQDbDAUexFawFQFlr2+ckaB/H5n2WeULTbe2a5ECP/vbo0u8rV0xIqW/1Oa4i6LRIUIVlAzvOk0g4DnCWsrDpr+OsdurctVaS2wDKjIRwbo1Ere/HaVhwbQDcdXLOadv2Ybbzefj6CcHazq1BHyZSpryXMrWrTtYanRGuImj33knTtlezS1Pxq+uKq8KpYiMxzhE2+UXvSHM4qKlt3ZgP2CC5xtSeDW6pQ7YHlN0ZfTM+4JH7BvZ0QUCN/pPH1g8fJ7Nt7uDp5/+Fcv+etLFzmCZR8o3Y+WK/jAcHcalhzWX+F5QweSXb7v0gvuIb0koAIxN4qtuAWnq2qqytT6wxr3OAniZ2ZxTwLaL9hXTtaGgssM3gs6SsJd7gXgAZUPGgf10hLuM+detAN4V8TQ3h0kJ0fP8vZ7rYKv+xGH2P7I9+o4AyvBdXSCuZqW+l+mP4Tac/9SV4QoYUO+ZR7AvnjwCsPrzy/+IUZAQ11S/eGPpHhMI22hDlfTqau0uK2HXTILAs+p3UylmNy7LXqXrN1hpWJIrCMD62E0EJ3VPHkMZqnhe/re3XNrcZF0RKO619M17SnK6I9RAec/nq4E09thmWr2RtfgpEN2TfVgOgCyzDTAiLVYFiZKAPLEFpAZBoOKxPNDKtobBDPOi2gaRGElYm2whrXfzK1VfEPC0D9IgkrE22FNc6viN/TOZ4gAjWLKKxMKyqsHHMtoCZWHLgioc5V7NNoVWDlaBGBSvn5cRPrrI7SipawyLeINpDPjmMFEIqdx27bbSIMK9PKCmsct/EAAWTz4QuDR/2xT9FqfWAZP9uSLLjOCsCsduyCmFirqnGdCKycC651f4ppqjUBOMpwFFQ7aolOBVbOBdfGqNpaF4D9sieAT+u2BnWftrCoTgZWzldc0gatIqBWB1Wu04GVG5txnRRruLBsOhBUuaUIrHH9p9LT7h/vtJt1neKaMXTczmil+o46YukCa9wH4UXlhe7Ycd/PV3VTW22vpsosdWCN8wcHvu+eLmaVlz1l7AmInz3pu+re77qWb7uLITWOwJqgv5me0KoPMDsB1fYwftm9nWDJBBoyHJ2jvuvev+6+Jy2gdrseUEUE1hxGYWbzr97YD/cEhLDih+Q39BH39r5utGFBJwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMz/AQYh0SZwk56LAAAAAElFTkSuQmCC
 // @source       https://github.com/a1mersnow/drive-rename
@@ -29,6 +29,13 @@
 /* ==========================================================================
  * 本地增强版更新日志（改动仅针对「云盘批量重命名」，原作者 a1mersnow）
  * --------------------------------------------------------------------------
+ * 1.6.5  UI 合并：规则链面板并入文件列表窗口，不再叠在页面右下角
+ *        · 新增统一外壳 #drr-shell：沿用原面板的位置（右侧、宽 max(500px,50vw)、蓝色边框）
+ *        · 上方 = 原脚本的文件列表/预览区（Vue 渲染，原样搬运进外壳，可独立滚动）
+ *        · 下方 = 规则链区（读取目录 / 选取前 N 条 / 全选 / 执行 / 停止 / 12 种规则 / 我的结果预览），带「收起」可整块折叠
+ *        · 配色统一为浅色主题，与上面板一致；去掉了原来右下角的「重命名方案」悬浮胶囊与独立浮窗
+ *        · 路由切换或面板重建时自动重新挂载（800ms 守护），不会出现空壳
+ *
  * 1.6.4  更新源切换为本仓库（GitHub），可自动更新
  *        · @downloadURL / @updateURL 指向 https://raw.githubusercontent.com/evanhuang2020/drive-rename/main/latest/drive-rename.user.js
  *        · 面板里的「有新版本啦！点击更新～」与「检查更新」请求同样走本仓库（不再请求 GreasyFork）
@@ -3184,55 +3191,58 @@
 
   /* ---------- UI ---------- */
   var CSS = [
-    "#drr-pill{position:fixed;right:16px;bottom:16px;z-index:2147483000;background:#2b6cf6;color:#fff;border:0;border-radius:20px;padding:8px 16px;font:600 13px -apple-system,'Segoe UI','Microsoft YaHei',sans-serif;cursor:pointer;box-shadow:0 6px 20px rgba(43,108,246,.45)}",
-    "#drr-pill:hover{background:#3f7bfa}",
-    "#drr-panel{position:fixed;right:16px;bottom:16px;width:520px;max-height:82vh;z-index:2147483100;background:#181c24;color:#e6e8ee;border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.5);display:none;flex-direction:column;overflow:hidden;font:13px/1.5 -apple-system,'Segoe UI','Microsoft YaHei',sans-serif}",
-    "#drr-panel.on{display:flex}",
-    "#drr-head{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#232936}",
-    "#drr-head b{flex:1;font-size:13px}",
-    "#drr-head button{background:#2f394b;border:0;color:#cfd6e4;border-radius:6px;padding:4px 9px;cursor:pointer;font-size:12px}",
-    "#drr-head button:hover{background:#3b4760}",
-    "#drr-body{padding:10px 12px;overflow:auto;display:flex;flex-direction:column;gap:9px}",
+    "#drr-shell{position:fixed;right:0;top:8px;bottom:8px;width:max(500px,50vw);z-index:2147483000;display:none;flex-direction:column;border-top:3px solid #3d40ee;border-bottom:3px solid #3d40ee;border-left:3px solid #3d40ee;border-radius:8px 0 0 8px;background:#fff;box-shadow:0 6px 22px rgba(61,64,238,.18);overflow:hidden;font:13px/1.5 -apple-system,'Segoe UI','Microsoft YaHei',sans-serif}",
+    "#drr-shell.on{display:flex}",
+    "#drr-shell>.drr-vuepanel{border:0}",
+    "#drr-dock{flex:0 0 auto;display:flex;flex-direction:column;max-height:52vh;min-height:0;border-top:2px solid #dbe2ff;background:#fff}",
+    "#drr-head{display:flex;align-items:center;gap:8px;padding:7px 12px;background:#eef2ff;border-bottom:1px solid #dbe2ff}",
+    "#drr-head b{flex:1;font-size:13px;font-weight:600;color:#3d40ee}",
+    "#drr-head button{background:#fff;border:1px solid #cbd5ff;color:#3d40ee;border-radius:6px;padding:2px 9px;cursor:pointer;font-size:12px}",
+    "#drr-head button:hover{background:#e4e9ff}",
+    "#drr-body{padding:10px 12px;overflow:auto;display:flex;flex-direction:column;gap:8px;min-height:0}",
+    "#drr-body.hide{display:none}",
     ".drr-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}",
-    ".drr-bar button{background:#2f394b;border:0;color:#d5dbe8;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px}",
-    ".drr-bar button:hover{background:#3b4760}",
-    ".drr-bar button.pri{background:#2b6cf6;color:#fff}",
-    ".drr-bar button.pri:hover{background:#3f7bfa}",
-    ".drr-bar button:disabled{opacity:.45;cursor:not-allowed}",
-    ".drr-bar select,.drr-bar label{background:#12161e;border:1px solid #333d50;color:#cbd4e3;border-radius:6px;padding:5px 7px;font-size:12px}",
-    ".drr-bar label{display:flex;align-items:center;gap:5px;border:0;padding:0;background:none}",
-    "#drr-rules{display:flex;flex-direction:column;gap:6px;max-height:36vh;overflow:auto}",
-    ".drr-card{background:#1f2531;border:1px solid #2c3444;border-radius:8px;padding:8px 9px;display:flex;flex-direction:column;gap:6px}",
-    ".drr-card.off{opacity:.5}",
-    ".drr-ctx{display:flex;align-items:center;gap:6px;font-size:12px;color:#9fb0c9}",
-    ".drr-ctx b{flex:1;color:#e6e8ee;font-weight:600}",
-    ".drr-ctx button{background:#2f394b;border:0;color:#cfd6e4;border-radius:5px;padding:2px 7px;cursor:pointer;font-size:11px}",
+    ".drr-bar button{background:#fff;border:1px solid #dcdfe6;color:#52565e;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px}",
+    ".drr-bar button:hover{border-color:#a9b6ff;color:#3d40ee}",
+    ".drr-bar button.pri{background:#3d40ee;border-color:#3d40ee;color:#fff}",
+    ".drr-bar button.pri:hover{background:#5b6af9}",
+    ".drr-bar button.danger{background:#fff;border-color:#f3cccc;color:#d9363e}",
+    ".drr-bar button.danger:hover{background:#fff1f0}",
+    ".drr-bar button:disabled{opacity:.5;cursor:not-allowed}",
+    ".drr-bar select{background:#fff;border:1px solid #dcdfe6;color:#303133;border-radius:6px;padding:4px 6px;font-size:12px}",
+    ".drr-bar label{display:flex;align-items:center;gap:4px;font-size:12px;color:#606266}",
+    "#drr-rules{display:flex;flex-direction:column;gap:6px}",
+    ".drr-card{background:#fbfcff;border:1px solid #e4e8f4;border-radius:8px;padding:8px 9px;display:flex;flex-direction:column;gap:6px}",
+    ".drr-card.off{opacity:.55}",
+    ".drr-ctx{display:flex;align-items:center;gap:6px;font-size:12px;color:#7a8399}",
+    ".drr-ctx b{flex:1;color:#303133;font-weight:600}",
+    ".drr-ctx button{background:#fff;border:1px solid #dcdfe6;color:#52565e;border-radius:5px;padding:1px 7px;cursor:pointer;font-size:11px}",
+    ".drr-ctx button:hover{border-color:#a9b6ff;color:#3d40ee}",
     ".drr-f{display:flex;gap:6px;align-items:center}",
-    ".drr-f>span{flex:0 0 58px;color:#8b97ad;font-size:12px}",
-    ".drr-f input[type=text],.drr-f input[type=number],.drr-f select{flex:1;background:#12161e;border:1px solid #333d50;color:#e6e8ee;border-radius:6px;padding:4px 7px;font-size:12px;min-width:0}",
+    ".drr-f>span{flex:0 0 58px;color:#909399;font-size:12px}",
+    ".drr-f input[type=text],.drr-f input[type=number],.drr-f select{flex:1;background:#fff;border:1px solid #dcdfe6;color:#303133;border-radius:6px;padding:4px 7px;font-size:12px;min-width:0}",
     ".drr-f input[type=checkbox]{width:auto}",
-    ".drr-f textarea{flex:1;background:#12161e;border:1px solid #333d50;color:#e6e8ee;border-radius:6px;padding:4px 7px;font-size:12px;min-height:60px;resize:vertical}",
-    ".drr-hint{font-size:11px;color:#6f7d94}",
-    "#drr-preview{max-height:34vh;overflow:auto;border:1px solid #2c3444;border-radius:8px}",
-    ".drr-row{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;border-bottom:1px solid #232a38;font-size:12px}",
+    ".drr-f textarea{flex:1;background:#fff;border:1px solid #dcdfe6;color:#303133;border-radius:6px;padding:4px 7px;font-size:12px;min-height:56px;resize:vertical}",
+    ".drr-hint{font-size:11px;color:#a0a6b8}",
+    "#drr-preview{max-height:28vh;overflow:auto;border:1px solid #e4e8f4;border-radius:8px;background:#fff}",
+    ".drr-row{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;border-bottom:1px solid #f2f4f9;font-size:12px}",
     ".drr-row:last-child{border-bottom:0}",
     ".drr-row input{margin-top:3px}",
     ".drr-nm{flex:1;min-width:0}",
-    ".drr-old{color:#8b97ad;word-break:break-all}",
-    ".drr-new{color:#66d19e;word-break:break-all}",
-    ".drr-row.conf .drr-new{color:#ff6b6b}",
-    ".drr-row.err .drr-new{color:#ffb020}",
-    ".drr-row.done .drr-new{color:#6f7d94}",
-    "#drr-status{font-size:12px;color:#8f9bb3;white-space:pre-wrap;word-break:break-all}",
-    "#drr-limit{background:#12161e;border:1px solid #333d50;color:#e6e8ee;border-radius:6px;padding:4px 6px;font-size:12px;width:64px}",
-    "#drr-limit::-webkit-outer-spin-button,#drr-limit::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}",
-    ".drr-bar button.danger{background:#6d2a2a;color:#ffd9d9}",
-    ".drr-bar button.danger:hover{background:#873333}"
+    ".drr-old{color:#909399;word-break:break-all}",
+    ".drr-new{color:#0f9d58;word-break:break-all}",
+    ".drr-row.conf .drr-new{color:#dc2626}",
+    ".drr-row.err .drr-new{color:#d97706}",
+    ".drr-row.done .drr-new{color:#b0b4c0}",
+    "#drr-status{font-size:12px;color:#606266;white-space:pre-wrap;word-break:break-all}",
+    "#drr-limit{background:#fff;border:1px solid #dcdfe6;color:#303133;border-radius:6px;padding:3px 6px;font-size:12px;width:64px}",
+    "#drr-limit::-webkit-outer-spin-button,#drr-limit::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}"
   ].join("");
 
   var el = {
     panel: null, pill: null, rulesBox: null, preview: null, status: null,
-    addSel: null, includeExt: null, order: null, btnRun: null, btnRead: null, limit: null, btnStop: null
+    addSel: null, includeExt: null, order: null, btnRun: null, btnRead: null, limit: null, btnStop: null,
+    shell: null, dock: null, body: null, foldBtn: null, open: true, vuePanel: null
   };
 
   function mk(tag, cls, txt) {
@@ -3247,19 +3257,14 @@
     st.textContent = CSS;
     (document.head || document.documentElement).appendChild(st);
 
-    el.pill = mk("button");
-    el.pill.id = "drr-pill";
-    el.pill.textContent = "重命名方案";
-    el.pill.addEventListener("click", function () { open(true); });
-
     var p = mk("div");
-    p.id = "drr-panel";
+    p.id = "drr-dock";
 
     var head = mk("div");
     head.id = "drr-head";
     head.appendChild(mk("b", "", "重命名方案（规则链）"));
     var btnFold = mk("button", "", "收起");
-    btnFold.addEventListener("click", function () { open(false); });
+    btnFold.addEventListener("click", function () { open(!el.open); });
     head.appendChild(btnFold);
 
     var body = mk("div");
@@ -3363,15 +3368,69 @@
 
     p.appendChild(head);
     p.appendChild(body);
-    document.body.appendChild(p);
-    document.body.appendChild(el.pill);
 
     el.panel = p;
+    el.dock = p;
+    el.body = body;
+    el.foldBtn = btnFold;
+    el.open = true;
+    attach();
   }
 
   function open(on) {
-    el.panel.classList.toggle("on", !!on);
-    el.pill.style.display = on ? "none" : "block";
+    el.open = !!on;
+    if (el.body) el.body.classList.toggle("hide", !el.open);
+    if (el.foldBtn) el.foldBtn.textContent = el.open ? "收起" : "展开";
+  }
+
+  /* ---------- 与文件列表窗口合并：外壳 + 搬运 ---------- */
+  function findVuePanel() {
+    var root = document.getElementById("a1mersnow_webdrive_rename");
+    if (!root) return null;
+    var kids = root.querySelectorAll("div");
+    for (var i = 0; i < kids.length; i++) {
+      var cls = String(kids[i].className || "");
+      if (/max\(500px,50vw\)/.test(cls)) return kids[i];
+      if (cls.indexOf("custom-scrollbar") !== -1 && cls.indexOf("fixed") !== -1) return kids[i];
+    }
+    return null;
+  }
+
+  function adopt(panel) {
+    if (!panel) return;
+    var st = panel.style;
+    st.position = "static";
+    st.top = "auto"; st.right = "auto"; st.bottom = "auto"; st.left = "auto";
+    st.width = "auto"; st.height = "auto";
+    st.minHeight = "0";
+    st.flex = "1 1 auto";
+    st.border = "0"; st.boxShadow = "none"; st.borderRadius = "0";
+    st.overflowY = "auto";
+    st.padding = "12px 16px";
+    st.background = "#fff";
+    if (panel.classList) panel.classList.add("drr-vuepanel");
+  }
+
+  function attach() {
+    if (!el.panel) return false;
+    var P = (el.vuePanel && el.vuePanel.isConnected) ? el.vuePanel : findVuePanel();
+    if (!P) {
+      el.vuePanel = null;
+      if (el.shell) el.shell.classList.remove("on");
+      return false;
+    }
+    el.vuePanel = P;
+    if (!el.shell || !el.shell.isConnected) {
+      var sh = document.createElement("div");
+      sh.id = "drr-shell";
+      document.body.appendChild(sh);
+      el.shell = sh;
+      sh.appendChild(el.panel);
+    }
+    if (P.parentNode !== el.shell) el.shell.insertBefore(P, el.panel);
+    adopt(P);
+    el.shell.classList.add("on");
+    return true;
   }
 
   /* ---------- 规则渲染 ---------- */
@@ -3647,8 +3706,11 @@
   function syncVisible() {
     var ok = false;
     try { ok = !!B.shouldShowEntry(location.href); } catch (e) { ok = false; }
-    if (!ok) { el.panel.classList.remove("on"); el.pill.style.display = "none"; return; }
-    if (!el.panel.classList.contains("on")) el.pill.style.display = "block";
+    if (!ok) {
+      if (el.shell) el.shell.classList.remove("on");
+      return;
+    }
+    attach();
   }
 
   /* ---------- 启动 ---------- */
@@ -3656,8 +3718,9 @@
     loadRules();
     build();
     renderRules();
+    attach();
     window.addEventListener("hashchange", syncVisible);
-    setInterval(syncVisible, 2000);
+    setInterval(syncVisible, 800);
     syncVisible();
   }
 
