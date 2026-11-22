@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         云盘批量重命名
 // @namespace    vite-plugin-monkey
-// @version      1.6.5
+// @version      1.6.6
 // @author       a1mersnow
 // @description  批量重命名云盘里的文件，支持115网盘、123云盘、阿里云盘、百度网盘、移动云盘（2026新版接口适配）、天翼云盘、夸克云盘、UC网盘；内置「重命名方案」规则链面板（12 种规则可顺序叠加、预览、勾选执行），所有网盘通用；规则链面板已与文件列表窗口合并为同一窗口
 // @license      GPL
@@ -29,6 +29,13 @@
 /* ==========================================================================
  * 本地增强版更新日志（改动仅针对「云盘批量重命名」，原作者 a1mersnow）
  * --------------------------------------------------------------------------
+ * 1.6.6  UI 合并改为「双模式」，找不到文件列表窗口时自动回落独立浮窗（功能不会再消失）
+ *        · 合并模式：规则区挂在文件列表窗口下方（同 1.6.5）
+ *        · 浮窗模式：找不到原面板时，规则区以独立浮窗显示在右下角，并保留「重命名方案」胶囊入口
+ *        · 面板查找范围扩大：先看 #a1mersnow_webdrive_rename 内部，再全文档扫描（原面板若被 Teleport 到 body 也能找到）
+ *        · 标题栏右侧新增模式提示（已合并 / 独立浮窗），便于一眼确认当前形态
+ *        · 新增 window.__drMergeDiag() 诊断钩子
+ *
  * 1.6.5  UI 合并：规则链面板并入文件列表窗口，不再叠在页面右下角
  *        · 新增统一外壳 #drr-shell：沿用原面板的位置（右侧、宽 max(500px,50vw)、蓝色边框）
  *        · 上方 = 原脚本的文件列表/预览区（Vue 渲染，原样搬运进外壳，可独立滚动）
@@ -3236,13 +3243,18 @@
     ".drr-row.done .drr-new{color:#b0b4c0}",
     "#drr-status{font-size:12px;color:#606266;white-space:pre-wrap;word-break:break-all}",
     "#drr-limit{background:#fff;border:1px solid #dcdfe6;color:#303133;border-radius:6px;padding:3px 6px;font-size:12px;width:64px}",
-    "#drr-limit::-webkit-outer-spin-button,#drr-limit::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}"
+    "#drr-limit::-webkit-outer-spin-button,#drr-limit::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}",
+    "#drr-mode{font-size:11px;color:#8a92a6;margin-left:4px}",
+    "#drr-pill{position:fixed;right:16px;bottom:16px;z-index:2147483100;background:#3d40ee;color:#fff;border:0;border-radius:20px;padding:8px 16px;font:600 13px -apple-system,'Segoe UI','Microsoft YaHei',sans-serif;cursor:pointer;box-shadow:0 6px 20px rgba(61,64,238,.45);display:none}",
+    "#drr-pill:hover{background:#5b6af9}",
+    "#drr-pill.on{display:block}",
+    "#drr-dock.float{position:fixed;right:16px;bottom:16px;width:520px;max-height:72vh;z-index:2147483200;border:2px solid #3d40ee;border-radius:10px;box-shadow:0 12px 36px rgba(0,0,0,.28);overflow:hidden}"
   ].join("");
 
   var el = {
     panel: null, pill: null, rulesBox: null, preview: null, status: null,
     addSel: null, includeExt: null, order: null, btnRun: null, btnRead: null, limit: null, btnStop: null,
-    shell: null, dock: null, body: null, foldBtn: null, open: true, vuePanel: null
+    shell: null, dock: null, body: null, foldBtn: null, open: true, vuePanel: null, mode: null, modeName: ""
   };
 
   function mk(tag, cls, txt) {
@@ -3260,9 +3272,18 @@
     var p = mk("div");
     p.id = "drr-dock";
 
+    el.pill = mk("button");
+    el.pill.id = "drr-pill";
+    el.pill.textContent = "重命名方案";
+    el.pill.addEventListener("click", function () { open(true); });
+    document.body.appendChild(el.pill);
+
     var head = mk("div");
     head.id = "drr-head";
     head.appendChild(mk("b", "", "重命名方案（规则链）"));
+    el.mode = mk("span", "", "");
+    el.mode.id = "drr-mode";
+    head.appendChild(el.mode);
     var btnFold = mk("button", "", "收起");
     btnFold.addEventListener("click", function () { open(!el.open); });
     head.appendChild(btnFold);
@@ -3381,17 +3402,31 @@
     el.open = !!on;
     if (el.body) el.body.classList.toggle("hide", !el.open);
     if (el.foldBtn) el.foldBtn.textContent = el.open ? "收起" : "展开";
+    if (el.pill) el.pill.classList.toggle("on", el.modeName === "独立浮窗" && !el.open);
   }
 
-  /* ---------- 与文件列表窗口合并：外壳 + 搬运 ---------- */
+  /* ---------- 与文件列表窗口合并（找不到则回落独立浮窗） ---------- */
   function findVuePanel() {
+    var cand = [];
     var root = document.getElementById("a1mersnow_webdrive_rename");
-    if (!root) return null;
-    var kids = root.querySelectorAll("div");
-    for (var i = 0; i < kids.length; i++) {
-      var cls = String(kids[i].className || "");
-      if (/max\(500px,50vw\)/.test(cls)) return kids[i];
-      if (cls.indexOf("custom-scrollbar") !== -1 && cls.indexOf("fixed") !== -1) return kids[i];
+    if (root) {
+      var ds = root.querySelectorAll("div");
+      for (var i = 0; i < ds.length; i++) cand.push(ds[i]);
+    }
+    /* 原面板可能被 Teleport 到 body，兜底全文档扫描 */
+    var all = document.querySelectorAll('[class*="custom-scrollbar"]');
+    for (var j = 0; j < all.length; j++) cand.push(all[j]);
+
+    for (var k = 0; k < cand.length; k++) {
+      var n = cand[k];
+      if (!n) continue;
+      if (n === el.panel) continue;
+      if (el.dock && el.dock.contains(n)) continue;
+      if (n.closest && n.closest("#drr-shell")) continue;
+      var cls = String(n.className || "");
+      var isPanel = /max\(500px,50vw\)/.test(cls) ||
+        (cls.indexOf("custom-scrollbar") !== -1 && cls.indexOf("fixed") !== -1);
+      if (isPanel) return n;
     }
     return null;
   }
@@ -3411,27 +3446,75 @@
     if (panel.classList) panel.classList.add("drr-vuepanel");
   }
 
-  function attach() {
-    if (!el.panel) return false;
-    var P = (el.vuePanel && el.vuePanel.isConnected) ? el.vuePanel : findVuePanel();
-    if (!P) {
-      el.vuePanel = null;
-      if (el.shell) el.shell.classList.remove("on");
-      return false;
-    }
-    el.vuePanel = P;
+  function ensureShell() {
     if (!el.shell || !el.shell.isConnected) {
       var sh = document.createElement("div");
       sh.id = "drr-shell";
       document.body.appendChild(sh);
       el.shell = sh;
-      sh.appendChild(el.panel);
     }
-    if (P.parentNode !== el.shell) el.shell.insertBefore(P, el.panel);
+    return el.shell;
+  }
+
+  function setModeName(m) {
+    el.modeName = m;
+    if (el.mode) el.mode.textContent = m;
+  }
+
+  function dockMode(P) {
+    var sh = ensureShell();
+    el.vuePanel = P;
+    if (el.dock.parentNode !== sh) sh.appendChild(el.dock);
+    if (P.parentNode !== sh) sh.insertBefore(P, el.dock);
     adopt(P);
-    el.shell.classList.add("on");
+    el.dock.classList.remove("float");
+    el.dock.style.display = "flex";
+    sh.classList.add("on");
+    if (el.pill) el.pill.classList.remove("on");
+    setModeName("已合并");
     return true;
   }
+
+  function floatMode() {
+    if (el.shell) el.shell.classList.remove("on");
+    if (el.dock.parentNode !== document.body) document.body.appendChild(el.dock);
+    el.dock.classList.add("float");
+    el.dock.style.display = "flex";
+    setModeName("独立浮窗");
+    if (el.pill) el.pill.classList.toggle("on", !el.open);
+    return false;
+  }
+
+  function hideAll() {
+    if (el.shell) el.shell.classList.remove("on");
+    el.dock.classList.remove("float");
+    el.dock.style.display = "none";
+    if (el.pill) el.pill.classList.remove("on");
+    setModeName("");
+  }
+
+  function attach() {
+    if (!el.panel) return false;
+    var P = (el.vuePanel && el.vuePanel.isConnected && el.shell && el.shell.contains(el.vuePanel))
+      ? el.vuePanel : findVuePanel();
+    if (P) return dockMode(P);
+    return floatMode();
+  }
+
+  /* 诊断：控制台可看当前形态与关键元素是否存在 */
+  window.__drMergeDiag = function () {
+    return {
+      mode: el.modeName,
+      hasRoot: !!document.getElementById("a1mersnow_webdrive_rename"),
+      hasVuePanel: !!findVuePanel(),
+      panelAdopted: !!(el.vuePanel && el.shell && el.shell.contains(el.vuePanel)),
+      shellOn: !(el.shell && !el.shell.classList.contains("on")),
+      dockInDom: !!el.dock && el.dock.isConnected,
+      open: el.open,
+      href: location.href,
+      showEntry: (function () { try { return !!B.shouldShowEntry(location.href); } catch (e) { return "err"; } })()
+    };
+  };
 
   /* ---------- 规则渲染 ---------- */
   function renderRules() {
@@ -3706,10 +3789,7 @@
   function syncVisible() {
     var ok = false;
     try { ok = !!B.shouldShowEntry(location.href); } catch (e) { ok = false; }
-    if (!ok) {
-      if (el.shell) el.shell.classList.remove("on");
-      return;
-    }
+    if (!ok) { hideAll(); return; }
     attach();
   }
 
