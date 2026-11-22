@@ -5,7 +5,7 @@
     "version": "1.6.6",
     "file": "latest/drive-rename.user.js",
     "bytes": 202779,
-    "sha": "3be488b1c78ee5a7a5638519af4b50b16fe03144"
+    "sha": "025a59bef59f5fcd284de790817a282b252a2faf"
   },
   "versions": [
     {
@@ -60,7 +60,7 @@
       "version": "1.6.6",
       "file": "history/云盘批量重命名_v1.6.6.user.js",
       "bytes": 202779,
-      "sha": "3be488b1c78ee5a7a5638519af4b50b16fe03144"
+      "sha": "025a59bef59f5fcd284de790817a282b252a2faf"
     }
   ],
   "source": "云盘批量重命名（移动云盘适配版，基于 a1mersnow/drive-rename）"
