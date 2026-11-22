@@ -2474,7 +2474,7 @@
   const __unplugin_components_1 = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__scopeId", "data-v-b66f0371"]]);
   const name = "drive-rename";
   const type = "module";
-  const version = "1.6.3";
+  const version = "1.6.6";
   const packageManager = "pnpm@9.15.4";
   const description = "Batch rename files, supporting various cloud drives.";
   const author = "a1mersnow";
