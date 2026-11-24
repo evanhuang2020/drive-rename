@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         云盘批量重命名
 // @namespace    vite-plugin-monkey
-// @version      1.6.6
+// @version      1.6.7
 // @author       a1mersnow
 // @description  批量重命名云盘里的文件，支持115网盘、123云盘、阿里云盘、百度网盘、移动云盘（2026新版接口适配）、天翼云盘、夸克云盘、UC网盘；内置「重命名方案」规则链面板（12 种规则可顺序叠加、预览、勾选执行），所有网盘通用；规则链面板已与文件列表窗口合并为同一窗口
 // @license      GPL
@@ -29,6 +29,13 @@
 /* ==========================================================================
  * 本地增强版更新日志（改动仅针对「云盘批量重命名」，原作者 a1mersnow）
  * --------------------------------------------------------------------------
+ * 1.6.7  规则变多后预览被挤掉的问题（工具栏固定 + 规则区独立滚动 + 预览区常驻）
+ *        · 面板内部改为三段式：标题栏 / 固定工具栏（读取·选取前 N 条·全选·执行·停止 + 添加方案）/ 独立滚动的规则区 / 常驻预览区
+ *        · 预览区固定在面板底部，高度 clamp(96px,24vh,300px)，不再随规则条数增加被推出屏幕
+ *        · 预览区标题栏显示「共 N 条，已勾选 M 条」；可点「收起/展开」折叠，也可上下拖拽标题栏调高（高度记进 localStorage: dr.pv.h）
+ *        · 规则卡片压缩：两个勾选项（全部替换 / 忽略大小写）合并到同一行，行高更省，2~3 条规则也能同时看到预览
+ *        · 点「读取当前目录」后自动展开被折叠的预览区
+ *
  * 1.6.6  UI 合并改为「双模式」，找不到文件列表窗口时自动回落独立浮窗（功能不会再消失）
  *        · 合并模式：规则区挂在文件列表窗口下方（同 1.6.5）
  *        · 浮窗模式：找不到原面板时，规则区以独立浮窗显示在右下角，并保留「重命名方案」胶囊入口
@@ -2474,7 +2481,7 @@
   const __unplugin_components_1 = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__scopeId", "data-v-b66f0371"]]);
   const name = "drive-rename";
   const type = "module";
-  const version = "1.6.6";
+  const version = "1.6.7";
   const packageManager = "pnpm@9.15.4";
   const description = "Batch rename files, supporting various cloud drives.";
   const author = "a1mersnow";
@@ -3201,12 +3208,14 @@
     "#drr-shell{position:fixed;right:0;top:8px;bottom:8px;width:max(500px,50vw);z-index:2147483000;display:none;flex-direction:column;border-top:3px solid #3d40ee;border-bottom:3px solid #3d40ee;border-left:3px solid #3d40ee;border-radius:8px 0 0 8px;background:#fff;box-shadow:0 6px 22px rgba(61,64,238,.18);overflow:hidden;font:13px/1.5 -apple-system,'Segoe UI','Microsoft YaHei',sans-serif}",
     "#drr-shell.on{display:flex}",
     "#drr-shell>.drr-vuepanel{border:0}",
-    "#drr-dock{flex:0 0 auto;display:flex;flex-direction:column;max-height:52vh;min-height:0;border-top:2px solid #dbe2ff;background:#fff}",
+    "#drr-dock{flex:0 0 auto;display:flex;flex-direction:column;max-height:min(58vh,600px);min-height:0;border-top:2px solid #dbe2ff;background:#fff}",
     "#drr-head{display:flex;align-items:center;gap:8px;padding:7px 12px;background:#eef2ff;border-bottom:1px solid #dbe2ff}",
     "#drr-head b{flex:1;font-size:13px;font-weight:600;color:#3d40ee}",
     "#drr-head button{background:#fff;border:1px solid #cbd5ff;color:#3d40ee;border-radius:6px;padding:2px 9px;cursor:pointer;font-size:12px}",
     "#drr-head button:hover{background:#e4e9ff}",
-    "#drr-body{padding:10px 12px;overflow:auto;display:flex;flex-direction:column;gap:8px;min-height:0}",
+    "#drr-body{display:flex;flex-direction:column;min-height:0;flex:1 1 auto;overflow:hidden}",
+    "#drr-fixed{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;padding:8px 12px 6px;border-bottom:1px solid #eef1fa}",
+    "#drr-scroll{flex:1 1 auto;min-height:150px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:8px 12px}",
     "#drr-body.hide{display:none}",
     ".drr-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}",
     ".drr-bar button{background:#fff;border:1px solid #dcdfe6;color:#52565e;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px}",
@@ -3226,13 +3235,22 @@
     ".drr-ctx button{background:#fff;border:1px solid #dcdfe6;color:#52565e;border-radius:5px;padding:1px 7px;cursor:pointer;font-size:11px}",
     ".drr-ctx button:hover{border-color:#a9b6ff;color:#3d40ee}",
     ".drr-f{display:flex;gap:6px;align-items:center}",
-    ".drr-f>span{flex:0 0 58px;color:#909399;font-size:12px}",
+    ".drr-f>span{flex:0 0 62px;color:#909399;font-size:12px;white-space:nowrap}",
+    ".drr-f.drr-checks{align-items:center}",
+    ".drr-chk{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#606266;margin-right:14px;white-space:nowrap}",
     ".drr-f input[type=text],.drr-f input[type=number],.drr-f select{flex:1;background:#fff;border:1px solid #dcdfe6;color:#303133;border-radius:6px;padding:4px 7px;font-size:12px;min-width:0}",
     ".drr-f input[type=checkbox]{width:auto}",
     ".drr-f textarea{flex:1;background:#fff;border:1px solid #dcdfe6;color:#303133;border-radius:6px;padding:4px 7px;font-size:12px;min-height:56px;resize:vertical}",
     ".drr-hint{font-size:11px;color:#a0a6b8}",
-    "#drr-preview{max-height:28vh;overflow:auto;border:1px solid #e4e8f4;border-radius:8px;background:#fff}",
-    ".drr-row{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;border-bottom:1px solid #f2f4f9;font-size:12px}",
+    "#drr-preview{background:#fff}",
+    "#drr-pv{flex:0 0 auto;display:flex;flex-direction:column;height:clamp(96px,20vh,240px);border-top:2px solid #dbe2ff;background:#fff}",
+    "#drr-pv.fold{height:auto!important}",
+    "#drr-pv.fold #drr-pv-body{display:none}",
+    "#drr-pv-head{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:5px 12px;background:#f5f7ff;border-bottom:1px solid #e4e8f4;font-size:12px;font-weight:600;color:#3d40ee;cursor:ns-resize;user-select:none}",
+    "#drr-pv-head span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+    "#drr-pv-head button{background:#fff;border:1px solid #cbd5ff;color:#3d40ee;border-radius:6px;padding:1px 8px;cursor:pointer;font-size:12px;font-weight:400}",
+    "#drr-pv-body{flex:1 1 auto;min-height:0;overflow:auto}",
+    ".drr-row{display:flex;gap:8px;align-items:flex-start;padding:3px 8px;border-bottom:1px solid #f2f4f9;font-size:12px}",
     ".drr-row:last-child{border-bottom:0}",
     ".drr-row input{margin-top:3px}",
     ".drr-nm{flex:1;min-width:0}",
@@ -3254,7 +3272,8 @@
   var el = {
     panel: null, pill: null, rulesBox: null, preview: null, status: null,
     addSel: null, includeExt: null, order: null, btnRun: null, btnRead: null, limit: null, btnStop: null,
-    shell: null, dock: null, body: null, foldBtn: null, open: true, vuePanel: null, mode: null, modeName: ""
+    shell: null, dock: null, body: null, foldBtn: null, open: true, vuePanel: null, mode: null, modeName: "",
+    pv: null, pvBody: null, pvTitle: null, pvFoldBtn: null, pvFold: false, pvH: 0, scroll: null
   };
 
   function mk(tag, cls, txt) {
@@ -3381,11 +3400,43 @@
     el.status.textContent = "点「读取当前目录」开始。";
     el.preview = mk("div"); el.preview.id = "drr-preview";
 
-    body.appendChild(bar1);
-    body.appendChild(bar2);
-    body.appendChild(el.rulesBox);
-    body.appendChild(el.status);
-    body.appendChild(el.preview);
+    /* 固定工具栏（不随规则滚动） */
+    var fixed = mk("div"); fixed.id = "drr-fixed";
+    fixed.appendChild(bar1);
+    fixed.appendChild(bar2);
+
+    /* 规则区：独立滚动 */
+    var sc = mk("div"); sc.id = "drr-scroll";
+    sc.appendChild(el.rulesBox);
+    sc.appendChild(el.status);
+    el.scroll = sc;
+
+    /* 预览区：常驻底部，可折叠 / 可拖高 */
+    var pv = mk("div"); pv.id = "drr-pv";
+    var pvHead = mk("div"); pvHead.id = "drr-pv-head";
+    el.pvTitle = mk("span", "", "改名预览");
+    pvHead.appendChild(el.pvTitle);
+    el.pvFoldBtn = mk("button", "", "收起");
+    el.pvFoldBtn.title = "折叠 / 展开预览区；也可上下拖动这一行调整高度";
+    el.pvFoldBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      setPvFold(!el.pvFold);
+    });
+    pvHead.appendChild(el.pvFoldBtn);
+    var pvBody = mk("div"); pvBody.id = "drr-pv-body";
+    pvBody.appendChild(el.preview);
+    pv.appendChild(pvHead);
+    pv.appendChild(pvBody);
+    el.pv = pv; el.pvBody = pvBody;
+    bindPvDrag(pv, pvHead);
+    try {
+      var hh = parseInt(localStorage.getItem("dr.pv.h"), 10);
+      if (hh >= 96 && hh <= Math.round(window.innerHeight * 0.62)) { pv.style.height = hh + "px"; el.pvH = hh; }
+    } catch (e) {}
+
+    body.appendChild(fixed);
+    body.appendChild(sc);
+    body.appendChild(pv);
 
     p.appendChild(head);
     p.appendChild(body);
@@ -3396,6 +3447,40 @@
     el.foldBtn = btnFold;
     el.open = true;
     attach();
+  }
+
+  function setPvFold(f) {
+    el.pvFold = !!f;
+    if (el.pv) el.pv.classList.toggle("fold", el.pvFold);
+    if (el.pvFoldBtn) el.pvFoldBtn.textContent = el.pvFold ? "展开" : "收起";
+  }
+
+  /* 拖动预览标题栏调高 / 拉低 */
+  function bindPvDrag(pv, headEl) {
+    var dragging = false, sy = 0, h0 = 0;
+    function onMove(e) {
+      if (!dragging) return;
+      var h = h0 - (e.clientY - sy);
+      h = Math.max(96, Math.min(Math.round(window.innerHeight * 0.62), h));
+      if (el.pvFold) setPvFold(false);
+      pv.style.height = h + "px";
+      el.pvH = h;
+    }
+    function onUp() {
+      if (!dragging) return;
+      dragging = false;
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      if (el.pvH) { try { localStorage.setItem("dr.pv.h", String(el.pvH)); } catch (e) {} }
+    }
+    headEl.addEventListener("mousedown", function (e) {
+      if (e.button !== 0) return;
+      if (e.target && e.target.tagName === "BUTTON") return;
+      dragging = true; sy = e.clientY; h0 = pv.getBoundingClientRect().height;
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+      e.preventDefault();
+    });
   }
 
   function open(on) {
@@ -3549,10 +3634,12 @@
       ctx.appendChild(up); ctx.appendChild(down); ctx.appendChild(del);
       card.appendChild(ctx);
 
+      var lastCheckRow = null;
       def.fields.forEach(function (f) {
         var row = mk("div", "drr-f");
         row.appendChild(mk("span", "", f.label));
         var inp;
+        if (f.t !== "check") lastCheckRow = null;
         if (f.t === "select") {
           inp = mk("select");
           f.opts.forEach(function (o) {
@@ -3562,10 +3649,24 @@
           });
           inp.addEventListener("change", function () { rule.p[f.k] = inp.value; saveRules(); recompute(); });
         } else if (f.t === "check") {
+          /* 勾选项与上一个勾选项合并到同一行，省高度 */
+          if (lastCheckRow) {
+            row = lastCheckRow;
+          } else {
+            row = mk("div", "drr-f drr-checks");
+            row.appendChild(mk("span", "", "选项"));
+            lastCheckRow = row;
+          }
+          var chk = mk("label", "drr-chk");
           inp = document.createElement("input");
           inp.type = "checkbox";
           inp.checked = !!rule.p[f.k];
           inp.addEventListener("change", function () { rule.p[f.k] = inp.checked; saveRules(); recompute(); });
+          chk.appendChild(inp);
+          chk.appendChild(document.createTextNode(f.label));
+          row.appendChild(chk);
+          if (row.parentNode !== card) card.appendChild(row);
+          return;
         } else if (f.t === "textarea") {
           inp = mk("textarea");
           inp.value = rule.p[f.k] == null ? "" : rule.p[f.k];
@@ -3614,6 +3715,7 @@
           var folders = state.files.filter(function (x) { return x.type === "folder"; }).length;
           el.status.textContent = "已读取 " + state.files.length + " 项（文件夹 " + folders + " 个已忽略）。";
           state.rows = [];
+          if (el.pvFold) setPvFold(false);
           recompute();
         })
         .catch(function (e) {
@@ -3691,8 +3793,14 @@
 
   function renderPreview() {
     el.preview.innerHTML = "";
-    if (!state.rows.length) {
-      el.preview.appendChild(mk("div", "drr-hint", "还没有可预览的文件。"));
+    var total = state.rows.length;
+    var sel = state.rows.filter(function (r) { return r.sel; }).length;
+    if (el.pvTitle)
+      el.pvTitle.textContent = total
+        ? "改名预览 · 共 " + total + " 条，已勾选 " + sel + " 条"
+        : "改名预览 · 待读取";
+    if (!total) {
+      el.preview.appendChild(mk("div", "drr-hint", "还没有可预览的文件，点上面「读取当前目录」。"));
       return;
     }
     state.rows.forEach(function (r) {
@@ -3798,6 +3906,7 @@
     loadRules();
     build();
     renderRules();
+    renderPreview();
     attach();
     window.addEventListener("hashchange", syncVisible);
     setInterval(syncVisible, 800);
