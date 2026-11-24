@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         云盘批量重命名
 // @namespace    vite-plugin-monkey
-// @version      1.6.7
+// @version      1.6.8
 // @author       a1mersnow
 // @description  批量重命名云盘里的文件，支持115网盘、123云盘、阿里云盘、百度网盘、移动云盘（2026新版接口适配）、天翼云盘、夸克云盘、UC网盘；内置「重命名方案」规则链面板（12 种规则可顺序叠加、预览、勾选执行），所有网盘通用；规则链面板已与文件列表窗口合并为同一窗口
 // @license      GPL
@@ -29,6 +29,13 @@
 /* ==========================================================================
  * 本地增强版更新日志（改动仅针对「云盘批量重命名」，原作者 a1mersnow）
  * --------------------------------------------------------------------------
+ * 1.6.8  完成后自动刷新 + 面板高度可自由调整
+ *        · 重命名全部处理完（不含「停止」）后，状态栏倒计时 3 秒自动 location.reload()，同步页面真实文件状态
+ *        · 自动刷新可取消：状态栏同时出现「取消刷新」按钮，点了就停掉倒计时、改为手动 F5
+ *        · 面板/浮窗高度可自由拖：按住标题栏上下拖动即可调高调低（双击标题栏恢复默认自适应）
+ *        · 高度记在 localStorage: dr.dock.h，刷新页面后沿用上次的高度；换成拖动预览标题栏则只调预览区高度
+ *        · 预览区与浮窗默认改为「按内容自适应」：内容少时自动变矮（不再顶着 72vh 留大片空白），内容多时到上限内滚动
+ *
  * 1.6.7  规则变多后预览被挤掉的问题（工具栏固定 + 规则区独立滚动 + 预览区常驻）
  *        · 面板内部改为三段式：标题栏 / 固定工具栏（读取·选取前 N 条·全选·执行·停止 + 添加方案）/ 独立滚动的规则区 / 常驻预览区
  *        · 预览区固定在面板底部，高度 clamp(96px,24vh,300px)，不再随规则条数增加被推出屏幕
@@ -2481,7 +2488,7 @@
   const __unplugin_components_1 = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__scopeId", "data-v-b66f0371"]]);
   const name = "drive-rename";
   const type = "module";
-  const version = "1.6.7";
+  const version = "1.6.8";
   const packageManager = "pnpm@9.15.4";
   const description = "Batch rename files, supporting various cloud drives.";
   const author = "a1mersnow";
@@ -3208,14 +3215,14 @@
     "#drr-shell{position:fixed;right:0;top:8px;bottom:8px;width:max(500px,50vw);z-index:2147483000;display:none;flex-direction:column;border-top:3px solid #3d40ee;border-bottom:3px solid #3d40ee;border-left:3px solid #3d40ee;border-radius:8px 0 0 8px;background:#fff;box-shadow:0 6px 22px rgba(61,64,238,.18);overflow:hidden;font:13px/1.5 -apple-system,'Segoe UI','Microsoft YaHei',sans-serif}",
     "#drr-shell.on{display:flex}",
     "#drr-shell>.drr-vuepanel{border:0}",
-    "#drr-dock{flex:0 0 auto;display:flex;flex-direction:column;max-height:min(58vh,600px);min-height:0;border-top:2px solid #dbe2ff;background:#fff}",
-    "#drr-head{display:flex;align-items:center;gap:8px;padding:7px 12px;background:#eef2ff;border-bottom:1px solid #dbe2ff}",
+    "#drr-dock{flex:0 0 auto;display:flex;flex-direction:column;max-height:min(62vh,640px);min-height:0;overflow:hidden;border-top:2px solid #dbe2ff;background:#fff}",
+    "#drr-head{display:flex;align-items:center;gap:8px;padding:7px 12px;background:#eef2ff;border-bottom:1px solid #dbe2ff;cursor:ns-resize;user-select:none}",
     "#drr-head b{flex:1;font-size:13px;font-weight:600;color:#3d40ee}",
     "#drr-head button{background:#fff;border:1px solid #cbd5ff;color:#3d40ee;border-radius:6px;padding:2px 9px;cursor:pointer;font-size:12px}",
     "#drr-head button:hover{background:#e4e9ff}",
     "#drr-body{display:flex;flex-direction:column;min-height:0;flex:1 1 auto;overflow:hidden}",
     "#drr-fixed{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;padding:8px 12px 6px;border-bottom:1px solid #eef1fa}",
-    "#drr-scroll{flex:1 1 auto;min-height:150px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:8px 12px}",
+    "#drr-scroll{flex:1 1 auto;min-height:110px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:8px 12px}",
     "#drr-body.hide{display:none}",
     ".drr-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}",
     ".drr-bar button{background:#fff;border:1px solid #dcdfe6;color:#52565e;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px}",
@@ -3243,7 +3250,7 @@
     ".drr-f textarea{flex:1;background:#fff;border:1px solid #dcdfe6;color:#303133;border-radius:6px;padding:4px 7px;font-size:12px;min-height:56px;resize:vertical}",
     ".drr-hint{font-size:11px;color:#a0a6b8}",
     "#drr-preview{background:#fff}",
-    "#drr-pv{flex:0 0 auto;display:flex;flex-direction:column;height:clamp(96px,20vh,240px);border-top:2px solid #dbe2ff;background:#fff}",
+    "#drr-pv{flex:0 0 auto;display:flex;flex-direction:column;height:auto;max-height:clamp(96px,20vh,240px);padding-bottom:2px;border-top:2px solid #dbe2ff;background:#fff}",
     "#drr-pv.fold{height:auto!important}",
     "#drr-pv.fold #drr-pv-body{display:none}",
     "#drr-pv-head{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:5px 12px;background:#f5f7ff;border-bottom:1px solid #e4e8f4;font-size:12px;font-weight:600;color:#3d40ee;cursor:ns-resize;user-select:none}",
@@ -3266,14 +3273,19 @@
     "#drr-pill{position:fixed;right:16px;bottom:16px;z-index:2147483100;background:#3d40ee;color:#fff;border:0;border-radius:20px;padding:8px 16px;font:600 13px -apple-system,'Segoe UI','Microsoft YaHei',sans-serif;cursor:pointer;box-shadow:0 6px 20px rgba(61,64,238,.45);display:none}",
     "#drr-pill:hover{background:#5b6af9}",
     "#drr-pill.on{display:block}",
-    "#drr-dock.float{position:fixed;right:16px;bottom:16px;width:520px;max-height:72vh;z-index:2147483200;border:2px solid #3d40ee;border-radius:10px;box-shadow:0 12px 36px rgba(0,0,0,.28);overflow:hidden}"
+    "#drr-dock.float{position:fixed;right:16px;bottom:16px;width:520px;height:auto;max-height:72vh;z-index:2147483200;border:2px solid #3d40ee;border-radius:10px;box-shadow:0 12px 36px rgba(0,0,0,.28);overflow:hidden}",
+    "#drr-dock.float #drr-scroll{min-height:90px}",
+    "#drr-grip{font-size:11px;color:#8a92a6;cursor:ns-resize;letter-spacing:1px}",
+    "#drr-status button.drr-mini{margin-left:8px;background:#fff;border:1px solid #cbd5ff;color:#3d40ee;border-radius:6px;padding:1px 8px;cursor:pointer;font-size:11px}",
+    "#drr-status button.drr-mini:hover{background:#e4e9ff}",
   ].join("");
 
   var el = {
     panel: null, pill: null, rulesBox: null, preview: null, status: null,
     addSel: null, includeExt: null, order: null, btnRun: null, btnRead: null, limit: null, btnStop: null,
     shell: null, dock: null, body: null, foldBtn: null, open: true, vuePanel: null, mode: null, modeName: "",
-    pv: null, pvBody: null, pvTitle: null, pvFoldBtn: null, pvFold: false, pvH: 0, scroll: null
+    pv: null, pvBody: null, pvTitle: null, pvFoldBtn: null, pvFold: false, pvH: 0, scroll: null,
+    dockH: 0, reloadT: null
   };
 
   function mk(tag, cls, txt) {
@@ -3300,6 +3312,10 @@
     var head = mk("div");
     head.id = "drr-head";
     head.appendChild(mk("b", "", "重命名方案（规则链）"));
+    var grip = mk("span", "", "⇕");
+    grip.id = "drr-grip";
+    grip.title = "按住标题栏上下拖动可调面板高度；双击恢复自适应";
+    head.appendChild(grip);
     el.mode = mk("span", "", "");
     el.mode.id = "drr-mode";
     head.appendChild(el.mode);
@@ -3443,6 +3459,11 @@
 
     el.panel = p;
     el.dock = p;
+    bindDockDrag(p, head);
+    try {
+      var dh = parseInt(localStorage.getItem("dr.dock.h"), 10);
+      if (dh) applyDockHeight(dh);
+    } catch (e) {}
     el.body = body;
     el.foldBtn = btnFold;
     el.open = true;
@@ -3453,6 +3474,52 @@
     el.pvFold = !!f;
     if (el.pv) el.pv.classList.toggle("fold", el.pvFold);
     if (el.pvFoldBtn) el.pvFoldBtn.textContent = el.pvFold ? "展开" : "收起";
+  }
+
+  /* 设置面板/浮窗整体高度（px），并同步到 el.dockH */
+  function applyDockHeight(px) {
+    if (!px) return;
+    var cap = Math.round(window.innerHeight * 0.92);
+    if (el.modeName === "已合并" && el.shell && el.shell.getBoundingClientRect) {
+      var shH = el.shell.getBoundingClientRect().height;
+      if (shH) cap = Math.min(cap, Math.round(shH - 180));   /* 合并模式给上面的文件列表至少留 180px */
+    }
+    var h = Math.max(220, Math.min(cap, Math.round(px)));
+    if (el.dock) {
+      el.dock.style.height = h + "px";
+      el.dock.style.maxHeight = "none";
+    }
+    el.dockH = h;
+  }
+
+  /* 拖动标题栏调整整个面板的高度；双击恢复自适应 */
+  function bindDockDrag(dock, handle) {
+    var dragging = false, sy = 0, h0 = 0;
+    function mv(e) {
+      if (!dragging) return;
+      applyDockHeight(h0 - (e.clientY - sy));
+    }
+    function up() {
+      if (!dragging) return;
+      dragging = false;
+      document.removeEventListener("mousemove", mv);
+      document.removeEventListener("mouseup", up);
+      if (el.dockH) { try { localStorage.setItem("dr.dock.h", String(el.dockH)); } catch (e) {} }
+    }
+    handle.addEventListener("mousedown", function (e) {
+      if (e.button !== 0) return;
+      if (e.target && e.target.closest && e.target.closest("button")) return;
+      dragging = true; sy = e.clientY; h0 = dock.getBoundingClientRect().height;
+      document.addEventListener("mousemove", mv);
+      document.addEventListener("mouseup", up);
+      e.preventDefault();
+    });
+    handle.addEventListener("dblclick", function (e) {
+      if (e.target && e.target.closest && e.target.closest("button")) return;
+      el.dockH = 0;
+      dock.style.height = ""; dock.style.maxHeight = "";
+      try { localStorage.removeItem("dr.dock.h"); } catch (err) {}
+    });
   }
 
   /* 拖动预览标题栏调高 / 拉低 */
@@ -3485,6 +3552,8 @@
 
   function open(on) {
     el.open = !!on;
+    if (!el.open && el.dock && el.dockH) { el.dock.style.height = "auto"; el.dock.style.maxHeight = ""; }
+    else if (el.open && el.dock && el.dockH) { applyDockHeight(el.dockH); }
     if (el.body) el.body.classList.toggle("hide", !el.open);
     if (el.foldBtn) el.foldBtn.textContent = el.open ? "收起" : "展开";
     if (el.pill) el.pill.classList.toggle("on", el.modeName === "独立浮窗" && !el.open);
@@ -3854,9 +3923,27 @@
       el.btnRun.disabled = false;
       el.btnStop.disabled = true;
       var rest = todo.length - i;
-      el.status.textContent = reason === "stop"
-        ? "已停止：成功 " + ok + "，失败 " + bad + "，未处理 " + rest + " 条（仍保持勾选，可再次执行）。\n若页面未刷新，按 F5 同步。"
-        : "执行结束：成功 " + ok + "，失败 " + bad + "。\n若页面未刷新，按 F5 同步。";
+      if (el.reloadT) { clearTimeout(el.reloadT); el.reloadT = null; }
+      if (reason === "stop") {
+        el.status.textContent = "已停止：成功 " + ok + "，失败 " + bad + "，未处理 " + rest + " 条（仍保持勾选，可再次执行）。\n若页面未刷新，按 F5 同步。";
+      } else {
+        el.status.innerHTML = "";
+        el.status.appendChild(document.createTextNode(
+          "执行结束：成功 " + ok + "，失败 " + bad + "。3 秒后自动刷新页面…"));
+        var cancel = mk("button", "drr-mini", "取消刷新");
+        cancel.title = "取消自动刷新，改为手动按 F5";
+        cancel.addEventListener("click", function () {
+          if (el.reloadT) { clearTimeout(el.reloadT); el.reloadT = null; }
+          el.status.innerHTML = "";
+          el.status.appendChild(document.createTextNode(
+            "执行结束：成功 " + ok + "，失败 " + bad + "。已取消自动刷新，可手动按 F5 同步。"));
+        });
+        el.status.appendChild(cancel);
+        el.reloadT = setTimeout(function () {
+          el.reloadT = null;
+          try { location.reload(); } catch (e) {}
+        }, 3000);
+      }
       renderPreview();
       var remain = state.rows.filter(function (r) { return r.sel && !r.done && !r.err && !r.same; }).length;
       el.btnRun.disabled = remain === 0;
