@@ -1,11 +1,11 @@
 {
   "repo": "evanhuang2020/drive-rename",
-  "updated": "2026-11-22 18:40:00",
+  "updated": "2026-11-24 15:56:35",
   "latest": {
-    "version": "1.6.6",
+    "version": "1.6.7",
     "file": "latest/drive-rename.user.js",
-    "bytes": 202779,
-    "sha": "025a59bef59f5fcd284de790817a282b252a2faf"
+    "bytes": 208317,
+    "sha": "7331b6086f1ed6ef5f4a1f1e8bce648f4cfda65d"
   },
   "versions": [
     {
@@ -61,6 +61,12 @@
       "file": "history/云盘批量重命名_v1.6.6.user.js",
       "bytes": 202779,
       "sha": "025a59bef59f5fcd284de790817a282b252a2faf"
+    },
+    {
+      "version": "1.6.7",
+      "file": "history/云盘批量重命名_v1.6.7.user.js",
+      "bytes": 208317,
+      "sha": "7331b6086f1ed6ef5f4a1f1e8bce648f4cfda65d"
     }
   ],
   "source": "云盘批量重命名（移动云盘适配版，基于 a1mersnow/drive-rename）"
